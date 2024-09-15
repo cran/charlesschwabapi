@@ -1,11 +1,11 @@
-83d14b519a09757301e30d00e963fea6 *DESCRIPTION
+2522778b17114a14406b0839592f5252 *DESCRIPTION
 40839e633dc42eb948788aa4b2b66650 *LICENSE
 eacac44b6c6603ebe6e21e23de488e6a *NAMESPACE
 7a4b1a04a1d06f803f2bc10455595e0a *R/cancel_order.R
 e4cc30f3aaa0f029fa449b83f62e2d58 *R/get_account.R
 877bcd8178689bd30f5008449df868ea *R/get_account_numbers.R
 8e7410f3d6a8c92e19662437159c4b4b *R/get_accounts.R
-91132912b6f19b0f2854387d9c1c1f4c *R/get_authentication_tokens.R
+c2280a9ff1bd3f95d570eae79d09b078 *R/get_authentication_tokens.R
 8419dd5d98522f26bc5a62940d879404 *R/get_instruments.R
 09bc92afa4a64cfee3d15b8183e2051e *R/get_instruments_cusip.R
 5fb235859e47a510f632d50c95e3110a *R/get_market_hours.R
@@ -24,7 +24,7 @@ b847ae0643b8f0f7feaa4cfaaf930329 *R/get_transactions.R
 0cd7e2a37325fa26595be61cba6c5339 *R/get_user_preferences.R
 7b2862744c2cf71c814506bc39736626 *R/place_order.R
 2d81737d095a9904ff45f61e7466d023 *R/replace_order.R
-efbe6381a280776a7d8b0a42acb33837 *README.md
+584f288e26eeb2af2e036ce3613051d7 *README.md
 ed2264100263847299d1f567a1c427f9 *man/cancel_order.Rd
 2b072559636db73873b24218b7665b25 *man/get_account.Rd
 fe2fc8eb3a282d427c5bb03de5b8bb8e *man/get_account_numbers.Rd
