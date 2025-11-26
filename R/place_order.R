@@ -10,10 +10,9 @@
 #' to build the proper orders for programmatic execution and do robust testing
 #' outside of market hours to ensure that when a live trade comes it
 #' will be just as the user intended. The user of this function assumes
-#' all risk that trades could not be executed exactly as intended as
-#' the API and this package are still under active development.
+#' all risk that trades could not be executed exactly as intended.
 #'
-#' @return Returns a message informing the user if the order was successfully
+#' @return Returns a numeric order number and a message informing the user if the order was successfully
 #'         placed/created or if there was an error.
 #' @author Nick Bultman, \email{njbultman74@@gmail.com}, July 2024
 #' @keywords order account place
@@ -21,31 +20,56 @@
 #' @export
 #'
 #' @param tokens token object from `get_authentication_tokens` function (list).
-#' @param account_number encrypted ID of the account (string).
+#' @param encrypted_account_id encrypted ID of the account from `get_account_numbers` function (string).
 #' @param request_body Valid request to API for placing an order (JSON).
 #'
 place_order <- function(tokens,
-                        account_number,
+                        encrypted_account_id,
                         request_body) {
   # Ensure tokens parameter is a list
-  if (!is.list(tokens) || !is.character(account_number) || !inherits(request_body, "json")) { # nolint
-    stop("Tokens must be a list, account number must be a string, and the request body must be JSON.") # nolint
+  if (!is.list(tokens) || !is.character(encrypted_account_id) || !inherits(request_body, "json")) {
+    stop("Tokens must be a list, encrypted account ID must be a string, and the request body must be JSON.")
   }
   # Define URL
-  url <- paste0("https://api.schwabapi.com/trader/v1/accounts/", account_number, "/orders") # nolint
-  # Send GET request
+  url <- paste0("https://api.schwabapi.com/trader/v1/accounts/", encrypted_account_id, "/orders")
+  # Define list to hold error messages
+  error_messages <- list(
+    "400" = "400 error - validation problem with the request. Double check input objects, including tokens, and try again.",
+    "401" = "401 error - authorization token is invalid or there are no accounts allowed to view/use for trading that are registered with the provided third party application.",
+    "403" = "403 error - caller is forbidden from accessing this service.",
+    "404" = "404 error - resource is not found. Double check inputs and try again later.",
+    "500" = "500 error - unexpected server error. Please try again later.",
+    "503" = "503 error - server has a temporary problem responding. Please try again later."
+  )
+  # Send POST request
   request <- httr::POST(url = url,
-                        query = request_body,
-                        httr::add_headers(`accept` = "application/json",
-                                            `Authorization` = paste0("Bearer ", tokens$access_token))) # nolint
-  # Check if valid response returned (200)
-  if (httr::status_code(request) == 200) {
+                        body = request_body,
+                        httr::add_headers(`Content-Type` = "application/json",
+                                          `Authorization` = paste0("Bearer ", tokens$access_token)),
+                        encode = "json")
+  # Extract status code from request as string
+  request_status_code <- as.character(httr::status_code(request))
+  # Extract content from request
+  req_list <- httr::content(request)
+  # Check if valid response returned (201)
+  if (request_status_code == 201) {
     # Inform user that order was successfully placed/created
-    message("Order was successfully placed/created.")
-    # Return NULL
-    return(NULL)
-    # If invalid response, throw error and inform user
+    message("Order was successfully placed/created. More details are below. ")
+    print(unlist(req_list))
+    # Get the order number
+    order_num <- sub(paste0(url, "/"), "", request$headers$location)
+    # Return the order number
+    return(as.numeric(order_num))
+    # If API call is not a good status code
   } else {
-    stop("Error during API call - please check inputs and ensure access token is refreshed.") # nolint
+    # Get appropriate error message
+    error_message <- error_messages[request_status_code]
+    # If cannot find any error message, set to generic message
+    if (is.null(error_message)) {
+      error_message <- "Error during API call."
+    }
+    # Print error message and details from call
+    message(paste(error_message, "More details are below:"))
+    print(unlist(req_list))
   }
 }

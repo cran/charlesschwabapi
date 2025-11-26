@@ -6,7 +6,7 @@
 \usage{
 get_orders_account(
   tokens,
-  account_number,
+  encrypted_account_id,
   from_entered_datetime = strftime(Sys.time() - lubridate::days(60), format =
     "\%Y-\%m-\%dT\%H:\%M:\%S.000Z"),
   to_entered_datetime = strftime(Sys.time(), format = "\%Y-\%m-\%dT\%H:\%M:\%S.000Z"),
@@ -17,11 +17,11 @@ get_orders_account(
 \arguments{
 \item{tokens}{token object from `get_authentication_tokens` function (list).}
 
-\item{account_number}{encrypted ID of the account (string).}
+\item{encrypted_account_id}{encrypted ID of the account from `get_account_numbers` function (string).}
 
-\item{from_entered_datetime}{encrypted ID of the account - default is current datetime less 60 days (string).}
+\item{from_entered_datetime}{start of time range for orders that should be gathered - default is current datetime less 60 days (string).}
 
-\item{to_entered_datetime}{specific fields to be returned - default is current datetime (string).}
+\item{to_entered_datetime}{end of time range for orders that should be gathered - default is current datetime (string).}
 
 \item{max_results}{maximum number of results to be returned - default is NULL, which is 3000 (numeric).}
 
@@ -38,6 +38,14 @@ containing the orders for the specific account.
 By default, it will return all orders (default max is 3000)
 from the last 60 days. This can be adjusted through
 additional function parameters.
+}
+\details{
+The easiest way to enter the right strings in the start/end times is to
+begin with `Sys.time()`, use the `lubridate` package to adjust it, and
+then format it as `%Y-%m-%dT%H:%M:%S.000Z`. For example, to get the current
+date less 30 days, you can use:
+`strftime(Sys.time() - lubridate::days(30), format = "%Y-%m-%dT%H:%M:%S.000Z")`.
+The defaults for this function illustrate the appropriate usage for the API.
 }
 \author{
 Nick Bultman, \email{njbultman74@gmail.com}, July 2024
